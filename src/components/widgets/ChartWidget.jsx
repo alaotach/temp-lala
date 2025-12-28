@@ -136,8 +136,8 @@ export default function ChartWidget({ widget, dragListeners, onEdit, onDelete })
   // Skeleton
   if (isInitialLoad && data.length === 0 && !error) {
     return (
-      <div className="relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm">
-        <div className="h-72 bg-slate-100 dark:bg-slate-800/50 rounded animate-pulse" />
+      <div className="relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm min-h-[300px]">
+        <div className="h-full bg-slate-100 dark:bg-slate-800/50 rounded animate-pulse" />
       </div>
     );
   }
@@ -145,7 +145,7 @@ export default function ChartWidget({ widget, dragListeners, onEdit, onDelete })
   return (
     <div
       {...dragListeners}
-      className="relative w-full h-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing flex flex-col"
+      className="relative w-full h-full min-h-[300px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing flex flex-col"
     >
       {loading && !isInitialLoad && (
         <div className="absolute top-2 right-2 z-10">
@@ -208,27 +208,39 @@ export default function ChartWidget({ widget, dragListeners, onEdit, onDelete })
 
       {/* Chart */}
       {!error && data.length > 0 && (
-        <div className="flex-1 min-h-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+        <div className="w-full" style={{ minWidth: 0 }}>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 10 }}
                 angle={-45}
                 textAnchor="end"
-                height={70}
+                height={60}
                 stroke="#64748b"
+                interval="preserveStartEnd"
               />
-              <YAxis tick={{ fontSize: 11 }} stroke="#64748b" />
-              <Tooltip />
+              <YAxis 
+                tick={{ fontSize: 10 }} 
+                stroke="#64748b" 
+                width={40}
+              />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: '#1e293b',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: '#fff'
+                }}
+              />
               <Line
                 type="monotone"
                 dataKey="value"
                 stroke="#10b981"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 dot={false}
-                activeDot={{ r: 6 }}
+                activeDot={{ r: 4 }}
               />
             </LineChart>
           </ResponsiveContainer>

@@ -159,13 +159,15 @@ export default function Home() {
               items={widgets.map((w) => w.id)}
               strategy={rectSortingStrategy}
             >
-              <div className="flex flex-wrap gap-6">
+              <div className="flex flex-wrap gap-6 justify-start items-start">
                 {widgets.map((widget) => (
-                  <SortableWidget key={widget.id} id={widget.id} widget={widget}>
-                    {({ dragListeners }) =>
-                      renderWidget(widget, dragListeners)
-                    }
-                  </SortableWidget>
+                  <div key={widget.id} className="flex-shrink-0 min-w-0">
+                    <SortableWidget id={widget.id} widget={widget}>
+                      {({ dragListeners }) =>
+                        renderWidget(widget, dragListeners)
+                      }
+                    </SortableWidget>
+                  </div>
                 ))}
 
                 <AddWidgetPlaceholder onClick={() => setShowModal(true)} />

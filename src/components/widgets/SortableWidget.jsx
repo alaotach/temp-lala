@@ -43,7 +43,8 @@ export default function SortableWidget({ id, widget, children }) {
       <ResizableWidget
         initialWidth={isSmallScreen ? null : widget.width}
         initialHeight={isSmallScreen ? null : widget.height}
-        disableResize={isSmallScreen}
+        disableResize={false}
+        isMobileForced={isSmallScreen}
         onResize={handleResize}
       >
         {children({ dragListeners: listeners })}

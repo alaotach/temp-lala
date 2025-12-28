@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from "react";
+import useMediaQuery from "@/lib/hooks/useMediaQuery";
 
 export default function ResizableWidget({
   children,
@@ -12,7 +13,10 @@ export default function ResizableWidget({
 }) {
   // Set better default dimensions for charts
   const defaultWidth = 450;
-  const defaultHeight = 300;
+  const defaultHeight = 320;
+  const mobileWidth = "100%";
+  const mobileHeight = 220;
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const [dimensions, setDimensions] = useState({
     width: initialWidth || (disableResize ? null : defaultWidth),
@@ -34,10 +38,10 @@ export default function ResizableWidget({
     if (disableResize) {
       setDimensions({ width: null, height: null });
     } else if (!initialWidth && !initialHeight) {
-      // Ensure default dimensions are set for desktop
-      setDimensions({ width: defaultWidth, height: defaultHeight });
+      // Ensure default dimensions are set for desktop and mobile
+      setDimensions({ width: isMobile ? mobileWidth : defaultWidth, height: isMobile ? mobileHeight : defaultHeight });
     }
-  }, [disableResize, initialWidth, initialHeight]);
+  }, [isMobile, disableResize, initialWidth, initialHeight]);
 
   const handleMouseDown = useCallback(
     (e, direction) => {
@@ -118,8 +122,8 @@ export default function ResizableWidget({
       ref={widgetRef}
       className="relative w-full"
       style={{
-        width: disableResize ? "100%" : dimensions.width || undefined,
-        height: disableResize ? "auto" : dimensions.height || undefined,
+        width: dimensions.width || (isMobile ? mobileWidth : undefined),
+        height: dimensions.height || (isMobile ? mobileHeight : undefined),
         userSelect: isResizing ? "none" : "auto",
       }}
     >
