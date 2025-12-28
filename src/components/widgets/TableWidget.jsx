@@ -52,11 +52,59 @@ export default function TableWidget({ widget, dragListeners, onEdit, onDelete })
     (page + 1) * ROWS_PER_PAGE
   );
 
-  function renderCellValue(value) {
+  function renderCellValue(value, fieldName) {
     if (value == null) return "—";
+    const hasPercentSymbol = typeof value === "string" && value.includes('%');
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && typeof value === "string" && !isNaN(value)) {
+      const isPercentageField = hasPercentSymbol || (fieldName && (
+        fieldName.includes('percentChange') ||
+        fieldName.includes('PercentChange') ||
+        fieldName.toLowerCase().includes('percent') ||
+        fieldName.includes('%')
+      ));
+      
+      if (isPercentageField) {
+        return (
+          <span className={numValue >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+            {numValue.toLocaleString()}%
+          </span>
+        );
+      }
+      return numValue.toLocaleString();
+    }
+    if (hasPercentSymbol) {
+      const cleanValue = value.replace('%', '').trim();
+      const numVal = parseFloat(cleanValue);
+      if (!isNaN(numVal)) {
+        return (
+          <span className={numVal >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+            {value}
+          </span>
+        );
+      }
+    }
+    
+    if (typeof value === "number") {
+      const isPercentageField = fieldName && (
+        fieldName.includes('percentChange') ||
+        fieldName.includes('PercentChange') ||
+        fieldName.toLowerCase().includes('percent') ||
+        fieldName.includes('%')
+      );
+      
+      if (isPercentageField) {
+        return (
+          <span className={value >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+            {value.toLocaleString()}%
+          </span>
+        );
+      }
+      return value.toLocaleString();
+    }
+    
     if (
       typeof value === "string" ||
-      typeof value === "number" ||
       typeof value === "boolean"
     ) {
       return String(value);
@@ -163,7 +211,7 @@ export default function TableWidget({ widget, dragListeners, onEdit, onDelete })
                         key={f}
                         className="p-2 text-slate-600 dark:text-slate-400"
                       >
-                        {renderCellValue(row?.[f])}
+                        {renderCellValue(row?.[f], f)}
                       </td>
                     ))}
                   </tr>

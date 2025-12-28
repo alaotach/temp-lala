@@ -35,9 +35,58 @@ export default function CardWidget({ widget, dragListeners, onDelete, onEdit }) 
     return () => clearInterval(id);
   }, [url, interval]);
 
-  function renderValue(value) {
+  function renderValue(value, fieldPath) {
     if (value == null) return "—";
-    if (typeof value === "number") return value.toLocaleString();
+    
+    const hasPercentSymbol = typeof value === "string" && value.includes('%');
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && typeof value === "string" && !isNaN(value)) {
+      const isPercentageField = hasPercentSymbol || (fieldPath && (
+        fieldPath.includes('percentChange') ||
+        fieldPath.includes('PercentChange') ||
+        fieldPath.toLowerCase().includes('percent') ||
+        fieldPath.includes('%')
+      ));
+      
+      if (isPercentageField) {
+        return (
+          <span className={numValue >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+            {numValue.toLocaleString()}%
+          </span>
+        );
+      }
+      return numValue.toLocaleString();
+    }
+    if (hasPercentSymbol) {
+      const cleanValue = value.replace('%', '').trim();
+      const numVal = parseFloat(cleanValue);
+      if (!isNaN(numVal)) {
+        return (
+          <span className={numVal >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+            {value}
+          </span>
+        );
+      }
+    }
+    
+    if (typeof value === "number") {
+      const isPercentageField = fieldPath && (
+        fieldPath.includes('percentChange') ||
+        fieldPath.includes('PercentChange') ||
+        fieldPath.toLowerCase().includes('percent') ||
+        fieldPath.includes('%')
+      );
+      
+      if (isPercentageField) {
+        return (
+          <span className={value >= 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+            {value.toLocaleString()}%
+          </span>
+        );
+      }
+      return value.toLocaleString();
+    }
+    
     if (typeof value === "boolean") return value ? "✓ Yes" : "✗ No";
     if (typeof value === "object") return JSON.stringify(value);
     return String(value);
@@ -113,7 +162,7 @@ export default function CardWidget({ widget, dragListeners, onDelete, onEdit }) 
                 {fieldPath.replace(/\./g, " → ")}
               </span>
               <span className="text-right break-all">
-                {renderValue(readPath(rawData, fieldPath))}
+                {renderValue(readPath(rawData, fieldPath), fieldPath)}
               </span>
             </div>
           ))}
